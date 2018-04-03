@@ -13,6 +13,9 @@ module.exports = {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
+  router: {
+    base: '/nuxt-cnode/'
+  },
   css: [
     {
       src: '~/assets/less/reset.less',
@@ -30,6 +33,7 @@ module.exports = {
   ** Build configuration
   */
   build: {
+    vendor: ['axios', 'vue-moment'],
     /*
     ** Run ESLint on save
     */
