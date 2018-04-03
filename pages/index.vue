@@ -1,60 +1,13 @@
 <template>
-  <section class="container">
-    <div>
-      <ul>
-        <li v-for="item in list" :key="item.id">{{item.title}}</li>
-      </ul>
-    </div>
-  </section>
+  <nuxt-link class="home-link" to="topics">点这里</nuxt-link>
 </template>
 
-<script>
-import { ajaxGet } from '~/plugins/util'
-
-const getData = () => {
-  let param = {
-    limit: 10
-  }
-  return ajaxGet('/topics', param)
-}
-
-export default {
-  async asyncData () {
-    let data = await getData()
-    return {
-      list: data
-    }
-  }
-}
-</script>
-
 <style>
-.container {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.home-link {
+  width: 100%;
+  font-size: 50px;
+  margin: 50px auto;
   text-align: center;
-}
-
-.title {
-  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* 1 */
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
+  display: inline-block;
 }
 </style>

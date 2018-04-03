@@ -8,7 +8,6 @@ const $ajax = axios.create({
 
 $ajax.interceptors.response.use(function(response) {
   let data = response.data
-  console.log(data.success)
   if (data.success) {
     return data.data
   } else {

@@ -55,8 +55,12 @@ export default {
 .tieba-cell {
   padding: 10px 20px;
   display: flex;
+  border-bottom: 1px dotted #e4e6eb;
   &:hover {
     background-color: #f7f9fc;
+  }
+  &:first-child {
+    border-top: 1px dotted #e4e6eb;
   }
   .reply-count {
     width: 50px;
@@ -106,7 +110,7 @@ export default {
       cursor: zoom-in;
     }
     img {
-      height: 100%;
+      max-height: 100%;
     }
   }
   .target-img {
