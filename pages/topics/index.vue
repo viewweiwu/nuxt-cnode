@@ -33,7 +33,7 @@
 import { ajaxGet } from '~/plugins/util'
 import TiebaCell from '~/components/topics/tieba-cell'
 import Banner from '~/components/topics/banner'
-import User from '~/components/topics/User'
+import User from '~/components/topics/user'
 import Pager from '~/components/pager'
 
 const getData = (page = 1, tab, self) => {
@@ -55,6 +55,7 @@ const getData = (page = 1, tab, self) => {
           list.push(allStr[2])
         }
         item.imgList = list
+        item.content = item.content.slice(0, 80) + '...'
         return item
       })
       if (self) {
@@ -89,6 +90,7 @@ export default {
         {
           link: '/topics',
           text: '全部',
+          tab: '',
           active: false
         },
         {

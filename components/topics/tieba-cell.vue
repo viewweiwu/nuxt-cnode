@@ -76,8 +76,7 @@ export default {
     width: 50%;
     flex: 1;
   }
-  .cell-title,
-  .cell-content {
+  .cell-title {
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;

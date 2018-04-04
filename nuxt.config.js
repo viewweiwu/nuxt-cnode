@@ -13,9 +13,6 @@ module.exports = {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
-  router: {
-    base: '/nuxt-cnode/'
-  },
   css: [
     {
       src: '~/assets/less/reset.less',

@@ -9,12 +9,12 @@
         <p>
           <i class="iconfont icon-qq"></i> 王二
         </p>
-        <p>
+        <!-- <p>
           <a href="https://github.com/viewweiwu" target="_blank"><i class="iconfont icon-github"></i> viewweiwu</a>
         </p>
         <p>
           <a href="https://segmentfault.com/u/viewweiwu" target="_blank"><i class="icon-sf">sf</i> viewweiwu</a>
-        </p>
+        </p> -->
       </div>
     </div>
     <p class="user-title-sub">我在本群信息</p>

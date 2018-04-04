@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import axios from 'axios'
+import qs from 'qs'
 
 const $ajax = axios.create({
   baseURL: 'https://cnodejs.org/api/v1',
