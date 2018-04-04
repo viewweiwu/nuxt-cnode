@@ -1,5 +1,6 @@
 <template>
   <div class="topics">
+    <Danmaku></Danmaku>
     <Banner></Banner>
     <div class="topics-nav">
       <nuxt-link
@@ -22,9 +23,9 @@
         </ul>
         <pager class="topics-papge" :page="page"></pager>
       </div>
-      <div class="topics-aside">
+      <!-- <div class="topics-aside">
         <User class="topics-card"></User>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -34,6 +35,7 @@ import { ajaxGet } from '~/plugins/util'
 import TiebaCell from '~/components/topics/tieba-cell'
 import Banner from '~/components/topics/banner'
 import User from '~/components/topics/user'
+import Danmaku from '~/components/topics/danmaku'
 import Pager from '~/components/pager'
 
 const getData = (page = 1, tab, self) => {
@@ -73,6 +75,7 @@ export default {
     TiebaCell,
     Banner,
     Pager,
+    Danmaku,
     User
   },
   async asyncData (route) {
