@@ -1,10 +1,14 @@
 <template>
-  <div ref="danmaku" class="danmaku">
+  <div ref="danmaku" class="danmaku" :class="{show: show}">
+    <div class="danmaku-btn-close" @click="close">
+      <i class="iconfont icon-close"></i>
+    </div>
     <div class="chennel-info">
       <div v-for="(item, i) in chennelList" :key="i">
         <p>chennel{{i}}: {{item.isBusy}}</p>
-        <p v-for="m in item.children" :key="m.text">{{m.left}}</p>
+        <!-- <p v-for="m in item.children" :key="m.text">{{m.left}}</p> -->
       </div>
+      <div v-for="(item) in messageList" :key="item.id">{{item.text}}</div>
     </div>
     <canvas ref="canvas"></canvas>
     <!-- <div class="danmaku-message">hello danmu</div> -->
@@ -15,22 +19,18 @@
 export default {
   data() {
     return {
-      chennelList: []
+      show: false,
+      chennelList: [], // 通道
+      messageList: [] // 弹幕池
     }
   },
   mounted() {
+    this.$bus.$on('danmaku', this.getDanmakuData)
     this.init()
-    
-    let i = 0
-    let timer = setInterval(() => {
-      i += 1
-      if (i > 100) clearInterval(timer)
-      let message = this.generate({text: `第 ${i} 条弹幕`})
-      this.pushMessageToChennel(message)
-    }, 100)
     this.loop()
   },
   methods: {
+    // 初始化
     init() {
       let $canvas = this.$refs.canvas
       $canvas.width = window.innerWidth
@@ -39,6 +39,7 @@ export default {
       this.$canvas = $canvas
       this.spliteChennel()
     },
+    // 循环动画
     loop() {
       requestAnimationFrame(() => {
         // 清空画布
@@ -55,33 +56,59 @@ export default {
     clear() {
       this.ctx.clearRect(0, 0, this.$canvas.width, this.$canvas.height)
     },
+    // 获取弹幕数据
+    getDanmakuData(id) {
+      this.show = true
+      /* eslint-disable-next-line */
+      let reg = /\[(.*)\]\((.*?)\)/g
+      let param = {
+        mdrender: false
+      }
+      this.$ajaxGet(`/topic/${id}`, param).then(data => {
+        let list = data.replies
+        list.forEach(item => {
+          let message = this.generate({text: item.content.replace(reg, ''), id: item.id})
+          this.pushMessage(message)
+        })
+        this.nextMessage()
+      })
+    },
     reflow() {
       let width = this.$canvas.width
       this.chennelList.forEach(chennel => {
         for (let j = 0; j < chennel.children.length; j++) {
           let message = chennel.children[j]
-          message.left -= 5
+          if (message.left > width * 2 / 3) {
+            message.left -= 50
+          } else if (message.left < width / 8) {
+            message.left -= 50
+          } else {
+            message.left -= 5
+          }
           if (message.left + message.width < 0) {
             chennel.children.splice(j, 1)
             j -= 1
           }
         }
+        // 整理空闲通道和繁忙通道
         if (chennel.children.length > 0) {
           chennel.isBusy = chennel.children.some(message => {
-            return message.left + message.width + 100 > width
+            return message.left + message.width + 100 > width * 2 / 3
           })
         } else {
           chennel.isBusy = false
         }
       })
     },
-    generate({text = 'hello', color = this.getRandomColor()}) {
+    // 生成一条 message
+    generate({text = 'hello', color = this.getRandomColor(), id = Math.random()}) {
       let ctx = this.ctx
-      let fontSize = this.getRandom(16, 38)
+      let fontSize = this.getRandom(20, 45)
       let font = `${fontSize}px Microsof Yahei`
       ctx.font = font
       let width = ctx.measureText(text).width
       return {
+        id,
         left: this.$canvas.width - 0,
         text,
         color,
@@ -90,6 +117,7 @@ export default {
         width
       }
     },
+    // 画
     draw(message) {
       let ctx = this.ctx
       this.chennelList.forEach(chennel => {
@@ -99,6 +127,11 @@ export default {
           ctx.fillText(message.text, message.left, chennel.top)
         })
       })
+    },
+    close() {
+      this.messageList.length = 0
+      this.show = false
+      this.chennelList.forEach(chennel => chennel.children.length = 0)
     },
     // 生成弹幕通道
     spliteChennel() {
@@ -111,9 +144,40 @@ export default {
         })
       }
     },
+    nextMessage() {
+      setTimeout(() => {
+        if (this.messageList.length && this.show) {
+          let message = this.messageList.shift()
+          this.getNotBusyChennel().then(chennel => {
+            chennel.children.push({
+              ...message
+            })
+            chennel.isBusy = true
+            this.nextMessage()
+          })
+        }
+      }, 100)
+    },
+    pushMessage(message) {
+      this.messageList.push(message)
+    },
+    // 获取可用的通道
+    getNotBusyChennel() {
+      return new Promise(resolve => {
+        let chennelTimer = setInterval(() => {
+          let chennelList = this.chennelList.filter(item => !item.isBusy)
+          let chennel = chennelList[this.getRandom(0, chennelList.length - 1)]
+          if (chennel) {
+            clearInterval(chennelTimer)
+            resolve(chennel)
+          }
+        }, 100)
+      })
+    },
     // 把弹幕塞到不繁忙的通道里
     pushMessageToChennel(message) {
-      let chennel = this.chennelList.find(item => !item.isBusy)
+      let chennelList = this.chennelList.filter(item => !item.isBusy)
+      let chennel = chennelList[this.getRandom(0, chennelList.length - 1)]
       if (chennel) {
         chennel.children.push({
           ...message
@@ -125,14 +189,13 @@ export default {
       }
     },
     getRandomColor() {
-      let colors = ['rgb(4, 174, 245)', 'rgb(255, 180, 0)', 'rgb(255, 255, 255)']
-      // let [c1, c2] = [this.getRandom(), this.getRandom()]
+      let colors = ['#0ff', '#0fc', '#0c3', '#3ff', '#3f6', '#6cf', '#99f', '#c03', '#f06', '#cf0', '#f33', '#ff3']
+      return colors[this.getRandom(0, colors.length)]
       // let c1 = this.getRandom(200, 255)
       // let c2 = this.getRandom(100, 255)
       // let colors = [0, c1, c2].sort(() => 0.5 - Math.random())
       // let [r, g, b] = colors
       // return `rgb(${r}, ${g}, ${b})`
-      return colors[this.getRandom(0, colors.length)]
     },
     getRandom(min = 0, max = 255) {
       return ~~(Math.random() * (max - min) + min)
@@ -143,7 +206,7 @@ export default {
 
 <style lang="less">
 .danmaku {
-  top: 0;
+  top: 100%;
   left: 0;
   width: 100%;
   height: 100%;
@@ -153,6 +216,30 @@ export default {
   z-index: 10;
   position: fixed;
   visibility: visible;
+  transition: top 300ms linear;
+  &.show {
+    top: 0;
+  }
+  .danmaku-btn-close {
+    top: 0;
+    right: 0;
+    width: 70px;
+    height: 70px;
+    line-height: 1;
+    color: #000;
+    background-color: #ddd;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    i {
+      font-size: 30px;
+    }
+    &:hover {
+      background-color: #fff;
+    }
+  }
   .danmaku-message {
     left: 0;
     position: absolute;
@@ -162,6 +249,8 @@ export default {
   .chennel-info {
     top: 0;
     left: 0;
+    opacity: .1;
+    display: none;
     position: absolute;
   }
   @keyframes message {

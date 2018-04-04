@@ -21,10 +21,13 @@ $ajax.interceptors.response.use(function(response) {
 const ajaxPost = (api, data = null) => $ajax.post(api, qs.stringify(data))
 const ajaxGet = (api, data = null) => $ajax.get(api, { params: {...data, '_': new Date().getTime() } })
 const jsonPost = (api, data = null) => $ajax.post(api, data)
+const $bus = new Vue()
 
 Vue.prototype.$ajaxPost = ajaxPost
 Vue.prototype.$ajaxGet = ajaxGet
 Vue.prototype.$jsonPost = jsonPost
+Vue.prototype.$bus = $bus
+
 
 export {
   ajaxGet,

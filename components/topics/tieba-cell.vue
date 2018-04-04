@@ -2,7 +2,7 @@
   <div class="tieba-cell">
     <div class="reply-count">{{cell.reply_count}}</div>
     <div class="cell-message">
-      <h2 class="cell-title">{{cell.title}}</h2>
+      <h2 class="cell-title" @click="showDanmaku(cell)">{{cell.title}}</h2>
       <div class="cell-content" v-if="cell.content">{{cell.content}}</div>
       <div class="cell-img-list">
         <div class="cell-img-total" v-if="cell.imgList.length">共 {{cell.imgList.length}} 张</div>
@@ -46,6 +46,9 @@ export default {
   methods: {
     showLargeImg(img) {
       this.targetImg = img
+    },
+    showDanmaku(cell) {
+      this.$bus.$emit('danmaku', cell.id)
     }
   }
 }
@@ -78,6 +81,7 @@ export default {
   }
   .cell-title {
     width: 100%;
+    cursor: pointer;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
