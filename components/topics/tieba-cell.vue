@@ -2,7 +2,10 @@
   <div class="tieba-cell">
     <div class="reply-count">{{cell.reply_count}}</div>
     <div class="cell-message">
-      <h2 class="cell-title" @click="showDanmaku(cell)">{{cell.title}}</h2>
+      <div class="cell-title">
+        <button class="btn-danmaku" @click="showDanmaku(cell)">弹幕</button>
+        <nuxt-link class="link" target="_blank" :to="`/topics/detail?id=${cell.id}`">{{cell.title}}</nuxt-link>
+      </div>
       <div class="cell-content" v-if="cell.content">{{cell.content}}</div>
       <div class="cell-img-list">
         <div class="cell-img-total" v-if="cell.imgList.length">共 {{cell.imgList.length}} 张</div>
@@ -57,8 +60,9 @@ export default {
 <style lang="less">
 .tieba-cell {
   padding: 10px 20px;
-  display: flex;
   border-bottom: 1px dotted #e4e6eb;
+  display: flex;
+  position: relative;
   &:hover {
     background-color: #f7f9fc;
   }
@@ -85,6 +89,12 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  .link {
+    color: #2d64b3;
+    &:visited {
+      color: #653096;
+    }
   }
   .cell-content {
     margin-top: 10px;
@@ -130,6 +140,12 @@ export default {
     color: #fff;
     background-color: rgba(0, 0, 0, .7);
     position: absolute;
+  }
+  .btn-danmaku {
+    top: 0;
+    left: 0;
+
+    cursor: pointer;
   }
 }
 </style>

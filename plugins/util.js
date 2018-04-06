@@ -10,7 +10,7 @@ const $ajax = axios.create({
 $ajax.interceptors.response.use(function(response) {
   let data = response.data
   if (data.success) {
-    return data.data
+    return data
   } else {
     return Promise.reject(error)
   }

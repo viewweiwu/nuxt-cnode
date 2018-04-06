@@ -47,6 +47,7 @@ const getData = (page = 1, tab, self) => {
       mdrender: false
     }
     ajaxGet('/topics', param).then(data => {
+      data = data.data || {}
       data = data.map(item => {
         let md = item.content
         /* eslint-disable-next-line */

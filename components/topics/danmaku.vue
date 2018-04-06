@@ -27,7 +27,6 @@ export default {
   mounted() {
     this.$bus.$on('danmaku', this.getDanmakuData)
     this.init()
-    this.loop()
   },
   methods: {
     // 初始化
@@ -37,7 +36,10 @@ export default {
       $canvas.height = window.innerHeight
       this.ctx = $canvas.getContext('2d')
       this.$canvas = $canvas
+      // 切割通道
       this.spliteChennel()
+      // 开始循环绘制弹幕
+      this.loop()
     },
     // 循环动画
     loop() {
@@ -58,6 +60,7 @@ export default {
     },
     // 获取弹幕数据
     getDanmakuData(id) {
+      document.addEventListener('keydown', this.onDocumnetKeydown)
       this.show = true
       /* eslint-disable-next-line */
       let reg = /\[(.*)\]\((.*?)\)/g
@@ -65,6 +68,7 @@ export default {
         mdrender: false
       }
       this.$ajaxGet(`/topic/${id}`, param).then(data => {
+        data = data.data || {}
         let list = data.replies
         list.forEach(item => {
           let message = this.generate({text: item.content.replace(reg, ''), id: item.id})
@@ -73,6 +77,7 @@ export default {
         this.nextMessage()
       })
     },
+    // 回流
     reflow() {
       let width = this.$canvas.width
       this.chennelList.forEach(chennel => {
@@ -132,6 +137,7 @@ export default {
       this.messageList.length = 0
       this.show = false
       this.chennelList.forEach(chennel => chennel.children.length = 0)
+      document.removeEventListener('keydown', this.onDocumnetKeydown)
     },
     // 生成弹幕通道
     spliteChennel() {
@@ -187,6 +193,10 @@ export default {
       } else {
         return false
       }
+    },
+    onDocumnetKeydown(e) {
+      let code = e.keyCode
+      if (code === 27) this.close()
     },
     getRandomColor() {
       let colors = ['#0ff', '#0fc', '#0c3', '#3ff', '#3f6', '#6cf', '#99f', '#c03', '#f06', '#cf0', '#f33', '#ff3']
