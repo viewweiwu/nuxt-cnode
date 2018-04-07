@@ -67,15 +67,17 @@ export default {
       let param = {
         mdrender: false
       }
-      this.$ajaxGet(`/topic/${id}`, param).then(data => {
-        data = data.data || {}
-        let list = data.replies
-        list.forEach(item => {
-          let message = this.generate({text: item.content.replace(reg, ''), id: item.id})
-          this.pushMessage(message)
+      setTimeout(() => {
+        this.$ajaxGet(`/topic/${id}`, param).then(data => {
+          data = data.data || {}
+          let list = data.replies
+          list.forEach(item => {
+            let message = this.generate({text: item.content.replace(reg, ''), id: item.id})
+            this.pushMessage(message)
+          })
+          this.nextMessage()
         })
-        this.nextMessage()
-      })
+      }, 500)
     },
     // 回流
     reflow() {
@@ -259,8 +261,8 @@ export default {
   .chennel-info {
     top: 0;
     left: 0;
-    opacity: .1;
-    display: none;
+    opacity: .5;
+    // display: none;
     position: absolute;
   }
   @keyframes message {

@@ -12,9 +12,11 @@ $ajax.interceptors.response.use(function(response) {
   if (data.success) {
     return data
   } else {
+    alert(data.error_msg)
     return Promise.reject(error)
   }
 }, function(error) {
+  alert(error.response.data.error_msg)
   return Promise.reject(error)
 })
 

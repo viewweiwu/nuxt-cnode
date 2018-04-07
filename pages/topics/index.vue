@@ -8,7 +8,7 @@
         class="topics-nav-link"
         :key="item.text"
         :to="item.link"
-        :class="{'active': item.tab === tab}"
+        :class="{'active': item.tab == tab}"
       >
         {{item.text}}
       </nuxt-link>
@@ -133,7 +133,7 @@ export default {
   watch: {
     $route() {
       this.page = ~~this.$route.query.page || 1
-      this.tab = this.$route.query.tab
+      this.tab = this.$route.query.tab || ''
       this.getData()
     }
   },

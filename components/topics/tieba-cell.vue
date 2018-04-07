@@ -4,7 +4,7 @@
     <div class="cell-message">
       <div class="cell-title">
         <button class="btn-danmaku" @click="showDanmaku(cell)">弹幕</button>
-        <nuxt-link class="link" target="_blank" :to="`/topics/detail?id=${cell.id}`">{{cell.title}}</nuxt-link>
+        <nuxt-link class="link" target="_blank" :to="`/topics/${cell.id}`">{{cell.title}}</nuxt-link>
       </div>
       <div class="cell-content" v-if="cell.content">{{cell.content}}</div>
       <div class="cell-img-list">

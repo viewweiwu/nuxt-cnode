@@ -33,6 +33,7 @@
   height: 150px;
   border: 5px solid #fff;
   margin: -75px 20px 0;
+  background-color: #eee;
   position: relative;
   img {
     width: 100%;
