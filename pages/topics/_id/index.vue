@@ -63,19 +63,20 @@
                 </ul>
               </div>
             </div>
-            <div class="reply-item-main" v-if="item.reply">
+            <div class="reply-item-main" v-if="item.reply && user.id">
               <textarea placeholder="请不要再这里输入 md 格式文本" v-model="item.replyContent"></textarea>
               <button class="reply-btn-submit" @click="submit(item)">发表</button>
             </div>
+            <p>请先点右边表情登录之后，才能回复。</p>
           </div>
         </div>
       </div>
     </div>
     <div class="detail-reply">
-      <p class="reply-title">
+      <p class="reply-title" v-if="user.id">
         发表回复
       </p>
-      <div class="reply-main">
+      <div class="reply-main" v-if="user.id">
         <textarea
           placeholder="这里支持 md 格式的文本"
           class="reply-content"
@@ -85,13 +86,15 @@
         </textarea>
         <div class="reply-view markdown-text" v-html="contentMD"></div>
       </div>
-      <button class="reply-btn-submit markdown-text" @click="submit">发表</button>
+      <button v-if="user.id" class="reply-btn-submit markdown-text" @click="submit">发表</button>
+      <p v-if="!user.id">请先点右边表情登录之后，才能回复。</p>
     </div>
   </div>
 </template>
 
 <script>
 import { ajaxGet } from '~/plugins/util'
+import { mapGetters } from 'vuex'
 import hljs from 'highlight.js'
 import marked from 'marked'
 import 'highlight.js/styles/ocean.css'
@@ -162,14 +165,19 @@ export default {
     this.highlight()
   },
   computed: {
+    ...mapGetters(['user']),
     contentMD() {
       return marked(this.replyContent)
     }
   },
   methods: {
     onUps(item) {
+      if (!this.user.accesstoken) {
+        alert('请先登录')
+        return
+      }
       let param = {
-        accesstoken: 'dcba818a-8b57-4f25-8fa5-2c66dc28c2ba'
+        accesstoken: this.user.accesstoken
       }
       this.$ajaxPost(`/reply/${item.id}/ups`, param).then(data => {
         if (data.action === 'up') {
@@ -217,7 +225,7 @@ export default {
       }
 
       let param = {
-        accesstoken: 'dcba818a-8b57-4f25-8fa5-2c66dc28c2ba',
+        accesstoken: this.user.accesstoken,
         content: this.replyContent
       }
       if (item) {

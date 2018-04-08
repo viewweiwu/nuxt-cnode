@@ -2,13 +2,21 @@
   <div class="banner">
     <div class="banner-bg"></div>
     <div class="banner-info">
-      <div class="banner-logo">
+      <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=cbc7299cbc5ac88cc77dc76057ace6340d50847e18016a80aa33d45bb6e9462b" class="banner-logo">
         <img src="https://avatars1.githubusercontent.com/u/15885749?s=460&v=4" alt="">
-      </div>
+      </a>
       <div class="banner-content">
-        <h2>前端大杂烩</h2>
+        <h2>
+          前端大杂烩
+          <span class="banner-sub">
+            <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=cbc7299cbc5ac88cc77dc76057ace6340d50847e18016a80aa33d45bb6e9462b" class="banner-connect">
+              <i class="iconfont icon-qq"></i>
+              731175396
+            </a>
+          </span>
+        </h2>
         <h3>
-          群号:<span class="banner-connect">731175396</span>前端大杂烩，vue，react，ng，nodejs，webgl。想要啥就有啥，本群仅供学习交流。</h3>
+          vue，react，ng，nodejs，webgl。想要啥就有啥，本群仅供学习交流。</h3>
       </div>
     </div>
   </div>
@@ -35,6 +43,7 @@
   margin: -75px 20px 0;
   background-color: #eee;
   position: relative;
+  display: block;
   img {
     width: 100%;
     height: 100%;
@@ -61,5 +70,15 @@
   margin: 0 3px;
   color: #000;
   cursor: pointer;
+}
+.banner-sub {
+  font-size: 14px;
+  color: #777;
+  a {
+    color: inherit;
+    &:hover {
+      color: #58f;
+    }
+  }
 }
 </style>

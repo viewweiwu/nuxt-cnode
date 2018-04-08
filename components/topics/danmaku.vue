@@ -3,11 +3,14 @@
     <div class="danmaku-btn-close" @click="close">
       <i class="iconfont icon-close"></i>
     </div>
-    <div class="chennel-info">
+    <div class="chennel-info" v-if="isDebugger">
+      <p>当前通道繁忙状况：</p>
       <div v-for="(item, i) in chennelList" :key="i">
         <p>chennel{{i}}: {{item.isBusy}}</p>
         <!-- <p v-for="m in item.children" :key="m.text">{{m.left}}</p> -->
       </div>
+      <br/>
+      <p>当前消息队列：</p>
       <div v-for="(item) in messageList" :key="item.id">{{item.text}}</div>
     </div>
     <canvas ref="canvas"></canvas>
@@ -20,6 +23,7 @@ export default {
   data() {
     return {
       show: false,
+      isDebugger: false,
       chennelList: [], // 通道
       messageList: [] // 弹幕池
     }
@@ -86,8 +90,6 @@ export default {
         for (let j = 0; j < chennel.children.length; j++) {
           let message = chennel.children[j]
           if (message.left > width * 2 / 3) {
-            message.left -= 50
-          } else if (message.left < width / 8) {
             message.left -= 50
           } else {
             message.left -= 5
@@ -199,6 +201,7 @@ export default {
     onDocumnetKeydown(e) {
       let code = e.keyCode
       if (code === 27) this.close()
+      else if (code === 192) this.isDebugger = !this.isDebugger
     },
     getRandomColor() {
       let colors = ['#0ff', '#0fc', '#0c3', '#3ff', '#3f6', '#6cf', '#99f', '#c03', '#f06', '#cf0', '#f33', '#ff3']

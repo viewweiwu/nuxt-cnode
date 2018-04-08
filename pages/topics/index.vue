@@ -58,7 +58,9 @@ const getData = (page = 1, tab, self) => {
           list.push(allStr[2])
         }
         item.imgList = list
-        item.content = item.content.slice(0, 80) + '...'
+        if (item.content.length > 80) {
+          item.content = item.content.slice(0, 80) + '...'
+        }
         return item
       })
       if (self) {

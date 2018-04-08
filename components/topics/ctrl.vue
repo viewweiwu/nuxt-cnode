@@ -1,27 +1,37 @@
 <template>
   <div class="topics-ctrl">
-    <div class="topics-ctrl-item" @click="backTop">
+    <div class="topics-ctrl-item" v-if="user.id">
+      <img :src="user.avatar_url" alt="">
+    </div>
+    <div class="topics-ctrl-item" v-else @click="login">
       <span>😀</span>
-      <span>登陆</span>
+      <span>登录</span>
     </div>
     <div class="topics-ctrl-item" @click="backTop">
       <span>▲</span>
       <span>返回<br>顶部</span>
     </div>
-    <Login></Login>
+    <Login ref="login"></Login>
   </div>
 </template>
 
 <script>
 import Login from '~/components/login'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
     Login
   },
+  computed: {
+    ...mapGetters(['user'])
+  },
   methods: {
     backTop() {
       document.body.scrollTop = 0
+    },
+    login() {
+      this.$refs.login.open()
     }
   }
 }

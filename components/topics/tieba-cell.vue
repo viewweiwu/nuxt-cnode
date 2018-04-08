@@ -3,8 +3,10 @@
     <div class="reply-count">{{cell.reply_count}}</div>
     <div class="cell-message">
       <div class="cell-title">
-        <button class="btn-danmaku" @click="showDanmaku(cell)">弹幕</button>
-        <nuxt-link class="link" target="_blank" :to="`/topics/${cell.id}`">{{cell.title}}</nuxt-link>
+        <span class="tag" v-if="cell.top">置顶</span>
+        <span class="tag green" v-if="cell.good">精华</span>
+        <span class="btn-danmaku tag red" v-if="cell.reply_count > 0" @click="showDanmaku(cell)">弹幕</span>
+        <nuxt-link :title="cell.title" class="link" target="_blank" :to="`/topics/${cell.id}`">{{cell.title}}</nuxt-link>
       </div>
       <div class="cell-content" v-if="cell.content">{{cell.content}}</div>
       <div class="cell-img-list">
@@ -146,6 +148,20 @@ export default {
     left: 0;
 
     cursor: pointer;
+  }
+  .tag {
+    padding: 0 5px;
+    margin: 0 2px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #58f;
+    &.green {
+      background-color: #0da5a2;
+    }
+    &.red {
+      background-color: #f06;
+    }
   }
 }
 </style>
