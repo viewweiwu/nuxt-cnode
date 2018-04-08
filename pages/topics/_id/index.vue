@@ -67,7 +67,7 @@
               <textarea placeholder="请不要再这里输入 md 格式文本" v-model="item.replyContent"></textarea>
               <button class="reply-btn-submit" @click="submit(item)">发表</button>
             </div>
-            <p>请先点右边表情登录之后，才能回复。</p>
+            <p v-if="item.reply && !user.id">请先点右边表情登录之后，才能回复。</p>
           </div>
         </div>
       </div>
