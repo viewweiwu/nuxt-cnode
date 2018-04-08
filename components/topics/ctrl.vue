@@ -1,15 +1,24 @@
 <template>
   <div class="topics-ctrl">
+    <div class="topics-ctrl-item" v-if="user.id" @click="logout">
+      <img class="main" :src="user.avatar_url" alt="">
+      <span class="extra">退出</span>
+    </div>
     <div class="topics-ctrl-item" v-if="user.id">
-      <img :src="user.avatar_url" alt="">
+      <i class="iconfont icon-edit main"></i>
+      <span class="extra">新建<br>帖子</span>
     </div>
     <div class="topics-ctrl-item" v-else @click="login">
-      <span>😀</span>
-      <span>登录</span>
+      <span class="main">
+        <i class="iconfont icon-smile"></i>
+      </span>
+      <span class="extra">登录</span>
     </div>
     <div class="topics-ctrl-item" @click="backTop">
-      <span>▲</span>
-      <span>返回<br>顶部</span>
+      <span class="main">
+        <i class="iconfont icon-top"></i>
+      </span>
+      <span class="extra">返回<br>顶部</span>
     </div>
     <Login ref="login"></Login>
   </div>
@@ -32,6 +41,10 @@ export default {
     },
     login() {
       this.$refs.login.open()
+    },
+    logout() {
+      sessionStorage.removeItem('user')
+      this.$store.dispatch('setUserData', {})
     }
   }
 }
@@ -58,21 +71,27 @@ export default {
       color: #fff;
       background-color: #58f;
       border-color: #58f;
-      span {
-        &:first-child {
-          display: none;
-        }
-        &:last-child {
-          display: inline;
-        }
+      .main {
+        display: none;
+      }
+      .extra {
+        display: inline-block;
       }
     }
-    span:last-child {
+    .extra {
       display: none;
     }
   }
   .topics-ctrl-item + .topics-ctrl-item {
     margin-top: 10px;
+  }
+  .icon-smile,
+  .icon-edit {
+    font-size: 30px;
+  }
+  .icon-top {
+    font-size: 20px;
+    font-weight: bold;
   }
 }
 </style>

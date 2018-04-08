@@ -1,5 +1,6 @@
 <template>
   <div class="topics">
+    <Ctrl></Ctrl>
     <Danmaku></Danmaku>
     <Banner></Banner>
     <div class="topics-nav">
@@ -37,6 +38,7 @@ import Banner from '~/components/topics/banner'
 import User from '~/components/topics/user'
 import Danmaku from '~/components/topics/danmaku'
 import Pager from '~/components/pager'
+import Ctrl from '~/components/topics/ctrl'
 
 const getData = (page = 1, tab, self) => {
   return new Promise(resolve => {
@@ -79,7 +81,8 @@ export default {
     Banner,
     Pager,
     Danmaku,
-    User
+    User,
+    Ctrl
   },
   async asyncData (route) {
     let {page, tab} = route.query

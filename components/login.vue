@@ -41,13 +41,21 @@ export default {
     }
   },
   mounted() {
-    this.form.accesstoken = localStorage.getItem('accesstoken') || ''
-    document.body.appendChild(this.$refs.login)
+    this.init()
   },
   computed: {
     ...mapGetters(['user'])
   },
   methods: {
+    init() {
+      let userStr = sessionStorage.getItem('user')
+      if (userStr) {
+        let user = JSON.parse(userStr) || {}
+        this.$store.dispatch('setUserData', user)
+      }
+      this.form.accesstoken = localStorage.getItem('accesstoken') || ''
+      document.body.appendChild(this.$refs.login)
+    },
     open() {
       if (this.user.id) {
         alert('你不需要再登录了')
@@ -72,6 +80,7 @@ export default {
           accesstoken: param.accesstoken
         }
         this.$store.dispatch('setUserData', user)
+        sessionStorage.setItem('user', JSON.stringify(user))
         localStorage.setItem('accesstoken', param.accesstoken)
         alert('登录成功')
         this.close()

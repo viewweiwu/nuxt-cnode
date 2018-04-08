@@ -37,7 +37,9 @@
               <li class="detail-up" @click="onUps(item)">
                 <span class="detail-action" :class="{active: item.action === 'up'}">+1</span>
                 <span class="detail-action red" :class="{active: item.action === 'down'}">-1</span>
-                <span class="detail-up-icon">👍</span>
+                <span class="detail-up-icon">
+                  <i class="iconfont icon-good"></i>
+                </span>
                 <span>{{item.ups.length}}</span>
               </li>
               <li>{{i + 2}}楼</li>
@@ -56,18 +58,27 @@
                   <li class="detail-up" @click="onUps(reply)">
                     <span class="detail-action" :class="{active: reply.action === 'up'}">+1</span>
                     <span class="detail-action red" :class="{active: reply.action === 'down'}">-1</span>
-                    <span class="detail-up-icon">👍</span>
+                    <span class="detail-up-icon">
+                      <i class="iconfont icon-good"></i>
+                    </span>
                     <span>{{reply.ups.length}}</span>
                   </li>
                   <li>{{reply.create_at | moment('calendar')}}</li>
                 </ul>
               </div>
             </div>
-            <div class="reply-item-main" v-if="item.reply && user.id">
-              <textarea placeholder="请不要再这里输入 md 格式文本" v-model="item.replyContent"></textarea>
+            <MdEditor
+              class="reply-item-main"
+              :hasView="false"
+              :hasTool="false"
+              v-model="item.replyContent"
+              placeholder="请不要再这里输入 md 格式文本"
+              v-if="item.reply && user.id"
+              @submit="submit(item)"
+            >
               <button class="reply-btn-submit" @click="submit(item)">发表</button>
-            </div>
-            <p v-if="item.reply && !user.id">请先点右边表情登录之后，才能回复。</p>
+            </MdEditor>
+            <p v-if="item.reply && !user.id">点右边表情登录之后，才能回复。</p>
           </div>
         </div>
       </div>
@@ -76,17 +87,9 @@
       <p class="reply-title" v-if="user.id">
         发表回复
       </p>
-      <div class="reply-main" v-if="user.id">
-        <textarea
-          placeholder="这里支持 md 格式的文本"
-          class="reply-content"
-          contenteditable="true"
-          @keydown="onContentKeydown"
-          v-model="replyContent">
-        </textarea>
-        <div class="reply-view markdown-text" v-html="contentMD"></div>
-      </div>
-      <button v-if="user.id" class="reply-btn-submit markdown-text" @click="submit">发表</button>
+      <MdEditor class="reply-main" @submit="submit" v-model="replyContent" v-if="user.id" placeholder="这里支持 md 格式的文本">
+      </MdEditor>
+      <button v-if="user.id" class="reply-btn-submit markdown-text" @click="submit()">发表</button>
       <p v-if="!user.id">请先点右边表情登录之后，才能回复。</p>
     </div>
   </div>
@@ -99,6 +102,7 @@ import hljs from 'highlight.js'
 import marked from 'marked'
 import 'highlight.js/styles/ocean.css'
 import Ctrl from '~/components/topics/ctrl'
+import MdEditor from '~/components/md-editor'
 
 const getData = (id, self) => {
   let param = {
@@ -109,7 +113,8 @@ const getData = (id, self) => {
 
 export default {
   components: {
-    Ctrl
+    Ctrl,
+    MdEditor
   },
   data() {
     return {
@@ -165,10 +170,7 @@ export default {
     this.highlight()
   },
   computed: {
-    ...mapGetters(['user']),
-    contentMD() {
-      return marked(this.replyContent)
-    }
+    ...mapGetters(['user'])
   },
   methods: {
     onUps(item) {
@@ -198,23 +200,6 @@ export default {
         $link.setAttribute('target', '_blank')
       })
     },
-    onContentKeydown(e) {
-      if (e.keyCode === 9) {
-        e.preventDefault()
-        e.stopPropagation()
-        let $target = e.target
-        let value = e.target.value
-        let start = $target.selectionStart
-        let end = $target.selectionEnd
-        value = value.slice(0, start) + '  ' + value.slice(end)
-        this.replyContent = value
-        this.$nextTick(() => {
-          $target.setSelectionRange(end + 2, end + 2)
-        })
-      } else if (e.keyCode === 13 && e.ctrlKey) {
-        this.submit()
-      }
-    },
     submit(item) {
       if (!this.replyContent.trim() && !item) {
         alert('请输入回复内容')
@@ -233,9 +218,27 @@ export default {
         param.reply_id = item.id
       }
       this.$ajaxPost(`/topic/${this.id}/replies`, param).then(data => {
+        let reply = {
+          id: data.reply_id,
+          content: marked(param.content),
+          action: '',
+          reply: false,
+          replyContent: '',
+          ups: [],
+          children: [],
+          author: {
+            avatar_url: this.user.avatar_url,
+            loginname: this.user.loginname,
+            create_at: new Date()
+          }
+        }
         if (item) {
           item.reply = false
           item.replyContent = ''
+          item.children.push(reply)
+        } else {
+          this.replies.push(reply)
+          this.replyContent = ''
         }
         alert('成功')
       })
@@ -380,27 +383,6 @@ export default {
     border-top: none;
     background-color: #eee;
   }
-  .reply-main {
-    margin: 10px;
-    display: flex;
-  }
-  .reply-content {
-    width: 50%;
-    height: 250px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-  }
-  .reply-view {
-    width: 50%;
-    height: 250px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-left: none;
-    background-color: #fff;
-    float: right;
-    overflow: auto;
-  }
   .reply-btn-submit {
     border: 1px solid #58f;
     margin-top: 10px;
@@ -465,6 +447,9 @@ export default {
       height: 100%;
       padding: 5px;
     }
+  }
+  .reply-main {
+    margin-top: 10px;
   }
 }
 </style>

@@ -30,7 +30,6 @@ Vue.prototype.$ajaxGet = ajaxGet
 Vue.prototype.$jsonPost = jsonPost
 Vue.prototype.$bus = $bus
 
-
 export {
   ajaxGet,
   ajaxPost,
