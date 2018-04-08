@@ -1,7 +1,10 @@
 <template>
   <div ref="login" class="login" v-show="isOpen">
     <div class="login-main">
-      <div class="login-title">登录</div>
+      <div class="login-title">
+        登录
+        <i @click="close" class="iconfont icon-close btn-close"></i>
+      </div>
       <div class="login-body">
         <form @submit.prevent="onSubmit">
           <!-- <p>
@@ -138,6 +141,10 @@ export default {
   .font-gray {
     font-size: 14px;
     color: #999;
+  }
+  .btn-close {
+    float: right;
+    cursor: pointer;
   }
 }
 </style>
